@@ -26,11 +26,19 @@ class ViewController: UIViewController, UIColorPickerViewControllerDelegate {
     private var selectedColorView: UIView?
     private var selectedColorLabel: UILabel?
     
+    private let languageSwitch = UISwitch()
+    private let languageLabel = UILabel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         setupView()
         addTapRecognizer()
+        setupLanguageSwitcher()
+        
+        let isEnglish = UserDefaults.standard.bool(forKey: "isEnglish")
+        languageSwitch.isOn = isEnglish
+        updateLanguage(isEnglish: isEnglish)
     }
     
     private func setupView() {
@@ -79,7 +87,7 @@ class ViewController: UIViewController, UIColorPickerViewControllerDelegate {
         resultColorView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(resultColorView)
         
-        resultColorLabel.text = "Color 3"
+        resultColorLabel.text = "Mixed Color"
         resultColorLabel.textColor = .black
         resultColorLabel.font = UIFont.systemFont(ofSize: 20, weight: .medium)
         resultColorLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -120,6 +128,38 @@ class ViewController: UIViewController, UIColorPickerViewControllerDelegate {
             resultColorView.widthAnchor.constraint(equalToConstant: 100),
         ])
         
+    }
+    
+    private func setupLanguageSwitcher() {
+        languageSwitch.addTarget(self, action: #selector(languageSwitchChanged(_:)), for: .valueChanged)
+        languageSwitch.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(languageSwitch)
+        
+        languageLabel.text = "RU | EN"
+        languageLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        languageLabel.textColor = .black
+        languageLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(languageLabel)
+        
+        NSLayoutConstraint.activate([
+            languageSwitch.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 40),
+            languageSwitch.topAnchor.constraint(equalTo: resultColorView.bottomAnchor, constant: 10),
+            
+            languageLabel.topAnchor.constraint(equalTo: languageSwitch.bottomAnchor, constant: 5),
+            languageLabel.centerXAnchor.constraint(equalTo: languageSwitch.centerXAnchor)
+        ])
+    }
+    
+    @objc private func languageSwitchChanged(_ sender: UISwitch) {
+        let isEnglish = sender.isOn
+        UserDefaults.standard.set(isEnglish, forKey: "isEnglish")
+        updateLanguage(isEnglish: isEnglish)
+    }
+    
+    private func updateLanguage(isEnglish: Bool) {
+        firstColorLabel.text = isEnglish ? "Color 1" : "Цвет 1"
+        secondColorLabel.text = isEnglish ? "Color 2" : "Цвет 2"
+        resultColorLabel.text = isEnglish ? "Mixed Color" : "Смешанный цвет"
     }
     
     private func addTapRecognizer() {
